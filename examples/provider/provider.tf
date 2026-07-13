@@ -1,3 +1,3 @@
-provider "scaffolding" {
+provider "unraid" {
   # example configuration here
 }

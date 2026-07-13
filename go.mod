@@ -1,4 +1,4 @@
-module github.com/hashicorp/terraform-provider-scaffolding-framework
+module github.com/Sander0542/terraform-provider-unraid
 
 go 1.25.8
 
