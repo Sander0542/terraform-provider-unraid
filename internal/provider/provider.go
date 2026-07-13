@@ -6,6 +6,7 @@ package provider
 import (
 	"context"
 	"net/http"
+	"os"
 
 	"github.com/hashicorp/terraform-plugin-framework/action"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -34,6 +35,7 @@ type UnraidProvider struct {
 // UnraidProviderModel describes the provider data model.
 type UnraidProviderModel struct {
 	Endpoint types.String `tfsdk:"endpoint"`
+	ApiToken types.String `tfsdk:"api_token"`
 }
 
 func (p *UnraidProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -45,8 +47,13 @@ func (p *UnraidProvider) Schema(ctx context.Context, req provider.SchemaRequest,
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"endpoint": schema.StringAttribute{
-				MarkdownDescription: "Example provider attribute",
+				MarkdownDescription: "The endpoint of the Unraid server. Can also be set via the `UNRAID_ENDPOINT` environment variable.",
 				Optional:            true,
+			},
+			"api_token": schema.StringAttribute{
+				MarkdownDescription: "The API token for authenticating with the Unraid server. Can also be set via the `UNRAID_API_TOKEN` environment variable.",
+				Optional:            true,
+				Sensitive:           true,
 			},
 		},
 	}
@@ -61,8 +68,37 @@ func (p *UnraidProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 
-	// Configuration values are now available.
-	// if data.Endpoint.IsNull() { /* ... */ }
+	// Fall back to environment variables if not set in configuration.
+	endpoint := os.Getenv("UNRAID_ENDPOINT")
+	if !data.Endpoint.IsNull() {
+		endpoint = data.Endpoint.ValueString()
+	}
+
+	apiToken := os.Getenv("UNRAID_API_TOKEN")
+	if !data.ApiToken.IsNull() {
+		apiToken = data.ApiToken.ValueString()
+	}
+
+	if endpoint == "" {
+		resp.Diagnostics.AddError(
+			"Missing Unraid Endpoint",
+			"The provider requires an endpoint to be set via the `endpoint` attribute or the `UNRAID_ENDPOINT` environment variable.",
+		)
+	}
+
+	if apiToken == "" {
+		resp.Diagnostics.AddError(
+			"Missing Unraid API Token",
+			"The provider requires an API token to be set via the `api_token` attribute or the `UNRAID_API_TOKEN` environment variable.",
+		)
+	}
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	_ = endpoint
+	_ = apiToken
 
 	// Example client configuration for data sources and resources
 	client := http.DefaultClient
