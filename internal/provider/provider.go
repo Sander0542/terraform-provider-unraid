@@ -5,9 +5,9 @@ package provider
 
 import (
 	"context"
-	"net/http"
 	"os"
 
+	"github.com/Sander0542/terraform-provider-unraid/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/action"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
@@ -97,13 +97,9 @@ func (p *UnraidProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 
-	_ = endpoint
-	_ = apiToken
-
-	// Example client configuration for data sources and resources
-	client := http.DefaultClient
-	resp.DataSourceData = client
-	resp.ResourceData = client
+	c := client.New(endpoint, apiToken)
+	resp.DataSourceData = c
+	resp.ResourceData = c
 }
 
 func (p *UnraidProvider) Resources(ctx context.Context) []func() resource.Resource {
@@ -115,7 +111,9 @@ func (p *UnraidProvider) EphemeralResources(ctx context.Context) []func() epheme
 }
 
 func (p *UnraidProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{}
+	return []func() datasource.DataSource{
+		NewVersionDataSource,
+	}
 }
 
 func (p *UnraidProvider) Functions(ctx context.Context) []func() function.Function {
