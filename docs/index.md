@@ -22,4 +22,5 @@ provider "unraid" {
 
 ### Optional
 
-- `endpoint` (String) Example provider attribute
+- `api_token` (String, Sensitive) The API token for authenticating with the Unraid server. Can also be set via the `UNRAID_API_TOKEN` environment variable.
+- `endpoint` (String) The endpoint of the Unraid server. Can also be set via the `UNRAID_ENDPOINT` environment variable.
