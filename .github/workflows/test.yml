@@ -65,6 +65,7 @@ jobs:
         terraform:
           - '1.13.*'
           - '1.14.*'
+          - '1.15.*'
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
@@ -77,6 +78,6 @@ jobs:
           terraform_wrapper: false
       - run: go mod download
       - env:
-          TF_ACC: "1"
+          TF_ACC: '1'
         run: go test -v -cover ./internal/provider/
         timeout-minutes: 10
