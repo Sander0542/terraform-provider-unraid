@@ -2,9 +2,6 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 # Releases need permissions to read and write the repository contents.
