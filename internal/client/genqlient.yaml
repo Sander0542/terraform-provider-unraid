@@ -1,3 +1,6 @@
+# Copyright (c) Sander Jochems
+# SPDX-License-Identifier: MIT
+
 schema: ../../schema/unraid-api.graphql
 operations:
   - queries.graphql
