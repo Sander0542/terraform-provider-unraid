@@ -1,0 +1,48 @@
+name: Sync Unraid API
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-unraid-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Rover
+        uses: apollographql-gh-actions/install-rover@rover-v0.41.0
+
+      - name: Fetch latest schema from Apollo Studio
+        env:
+          APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+        run: |
+          mkdir -p schema
+          rover graph fetch Unraid-API@current > schema/unraid-api.graphql
+
+      - name: Create pull request
+        id: create-pr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore(graphql): Unraid API schema'
+          branch: 'automation/sync-unraid-api'
+          delete-branch: true
+          title: 'chore(graphql): Unraid API schema'
+          body: |
+            Updates the checked-in Unraid API schema from Apollo Studio using `rover graph fetch Unraid-API@current`.
+          add-paths: |
+            schema/unraid-api.graphql
+
+      - name: Enable auto-merge
+        if: ${{ steps.create-pr.outputs.pull-request-number != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge --auto --squash "${{ steps.create-pr.outputs.pull-request-number }}"
