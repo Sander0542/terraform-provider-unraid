@@ -1,3 +1,6 @@
+# Copyright (c) Sander Jochems
+# SPDX-License-Identifier: MIT
+
 preset: angular
 plugins:
   - "@semantic-release/commit-analyzer"
