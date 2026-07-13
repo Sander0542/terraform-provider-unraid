@@ -9,6 +9,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/Khan/genqlient/graphql"
 )
 
 // Client is a simple GraphQL HTTP client for the Unraid API.
@@ -27,54 +29,33 @@ func New(endpoint string, apiToken string) *Client {
 	}
 }
 
-type graphqlRequest struct {
-	Query     string         `json:"query"`
-	Variables map[string]any `json:"variables,omitempty"`
-}
-
-type graphqlResponse[T any] struct {
-	Data   T              `json:"data"`
-	Errors []graphqlError `json:"errors,omitempty"`
-}
-
-type graphqlError struct {
-	Message string `json:"message"`
-}
-
-// Do executes a GraphQL query and decodes the response into T.
-func Do[T any](ctx context.Context, c *Client, query string, variables map[string]any) (T, error) {
-	var zero T
-
-	body, err := json.Marshal(graphqlRequest{Query: query, Variables: variables})
+// MakeRequest implements graphql.Client.
+func (c *Client) MakeRequest(ctx context.Context, req *graphql.Request, resp *graphql.Response) error {
+	body, err := json.Marshal(req)
 	if err != nil {
-		return zero, fmt.Errorf("marshaling request: %w", err)
+		return fmt.Errorf("marshaling request: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.endpoint, bytes.NewReader(body))
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, c.endpoint, bytes.NewReader(body))
 	if err != nil {
-		return zero, fmt.Errorf("creating request: %w", err)
+		return fmt.Errorf("creating request: %w", err)
 	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-api-key", c.apiToken)
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("x-api-key", c.apiToken)
 
-	resp, err := c.httpClient.Do(req)
+	httpResp, err := c.httpClient.Do(httpReq)
 	if err != nil {
-		return zero, fmt.Errorf("executing request: %w", err)
+		return fmt.Errorf("executing request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer httpResp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return zero, fmt.Errorf("unexpected HTTP status: %s", resp.Status)
-	}
-
-	var result graphqlResponse[T]
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return zero, fmt.Errorf("decoding response: %w", err)
+	if httpResp.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected HTTP status: %s", httpResp.Status)
 	}
 
-	if len(result.Errors) > 0 {
-		return zero, fmt.Errorf("graphql error: %s", result.Errors[0].Message)
+	if err := json.NewDecoder(httpResp.Body).Decode(resp); err != nil {
+		return fmt.Errorf("decoding response: %w", err)
 	}
 
-	return result.Data, nil
+	return nil
 }

@@ -70,43 +70,18 @@ func (d *VersionDataSource) Configure(_ context.Context, req datasource.Configur
 	d.client = c
 }
 
-type infoQueryResponse struct {
-	Info struct {
-		Versions struct {
-			Core struct {
-				Unraid string `json:"unraid"`
-				Api    string `json:"api"`
-				Kernel string `json:"kernel"`
-			} `json:"core"`
-		} `json:"versions"`
-	} `json:"info"`
-}
-
 func (d *VersionDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
-	const query = `
-		query {
-			info {
-				versions {
-					core {
-						unraid
-						api
-						kernel
-					}
-				}
-			}
-		}
-	`
-
-	data, err := client.Do[infoQueryResponse](ctx, d.client, query, nil)
+	data, err := client.GetVersion(ctx, d.client)
 	if err != nil {
-		resp.Diagnostics.AddError("Error reading Unraid info", err.Error())
+		resp.Diagnostics.AddError("Error reading Unraid version", err.Error())
 		return
 	}
 
+	core := data.Info.Versions.Core
 	state := VersionDataSourceModel{
-		Unraid: types.StringValue(data.Info.Versions.Core.Unraid),
-		Api:    types.StringValue(data.Info.Versions.Core.Api),
-		Kernel: types.StringValue(data.Info.Versions.Core.Kernel),
+		Unraid: types.StringValue(core.Unraid),
+		Api:    types.StringValue(core.Api),
+		Kernel: types.StringValue(core.Kernel),
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)

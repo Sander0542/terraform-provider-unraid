@@ -1,0 +1,11 @@
+query GetVersion {
+  info {
+    versions {
+      core {
+        unraid
+        api
+        kernel
+      }
+    }
+  }
+}

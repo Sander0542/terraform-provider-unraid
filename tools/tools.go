@@ -6,6 +6,7 @@
 package tools
 
 import (
+	_ "github.com/Khan/genqlient"
 	_ "github.com/hashicorp/copywrite"
 	_ "github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs"
 )
@@ -17,6 +18,9 @@ import (
 // If you do not have Terraform installed, you can remove the formatting command, but it is suggested
 // to ensure the documentation is formatted properly.
 //go:generate terraform fmt -recursive ../examples/
+
+// Generate typed GraphQL client code from the Unraid API schema.
+//go:generate go run github.com/Khan/genqlient ../internal/client/genqlient.yaml
 
 // Generate documentation.
 //go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs generate --provider-dir .. -provider-name unraid
