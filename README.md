@@ -4,7 +4,7 @@ Terraform provider for managing Unraid with the Terraform Plugin Framework.
 
 This repository contains the Terraform provider implementation for [Unraid](https://unraid.net/), including:
 
-- A resource and a data source (`internal/provider/`),
+- Provider implementation code (`internal/provider/`),
 - Examples (`examples/`) and generated documentation (`docs/`),
 - Miscellaneous meta files.
 
