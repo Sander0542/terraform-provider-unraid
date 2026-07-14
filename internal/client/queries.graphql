@@ -9,3 +9,23 @@ query GetVersion {
     }
   }
 }
+
+query GetShares {
+  shares {
+    name
+    free
+    used
+    size
+    include
+    exclude
+    cache
+    nameOrig
+    comment
+    allocator
+    splitLevel
+    floor
+    cow
+    color
+    luksStatus
+  }
+}
