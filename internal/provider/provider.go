@@ -112,6 +112,7 @@ func (p *UnraidProvider) EphemeralResources(ctx context.Context) []func() epheme
 
 func (p *UnraidProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewSharesDataSource,
 		NewVersionDataSource,
 	}
 }

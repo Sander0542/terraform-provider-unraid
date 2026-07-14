@@ -6,3 +6,9 @@ operations:
   - queries.graphql
 generated: generated.go
 package: client
+
+bindings:
+  BigInt:
+    type: int64
+  PrefixedID:
+    type: string

@@ -8,6 +8,93 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
+// GetSharesResponse is returned by GetShares on success.
+type GetSharesResponse struct {
+	Shares []GetSharesSharesShare `json:"shares"`
+}
+
+// GetShares returns GetSharesResponse.Shares, and is useful for accessing the field via an interface.
+func (v *GetSharesResponse) GetShares() []GetSharesSharesShare { return v.Shares }
+
+// GetSharesSharesShare includes the requested fields of the GraphQL type Share.
+type GetSharesSharesShare struct {
+	// Display name
+	Name string `json:"name"`
+	// (KB) Free space
+	Free int64 `json:"free"`
+	// (KB) Used Size
+	Used int64 `json:"used"`
+	// (KB) Total size
+	Size int64 `json:"size"`
+	// Disks that are included in this share
+	Include []string `json:"include"`
+	// Disks that are excluded from this share
+	Exclude []string `json:"exclude"`
+	// Is this share cached
+	Cache bool `json:"cache"`
+	// Original name
+	NameOrig string `json:"nameOrig"`
+	// User comment
+	Comment string `json:"comment"`
+	// Allocator
+	Allocator string `json:"allocator"`
+	// Split level
+	SplitLevel string `json:"splitLevel"`
+	// Floor
+	Floor string `json:"floor"`
+	// COW
+	Cow string `json:"cow"`
+	// Color
+	Color string `json:"color"`
+	// LUKS status
+	LuksStatus string `json:"luksStatus"`
+}
+
+// GetName returns GetSharesSharesShare.Name, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetName() string { return v.Name }
+
+// GetFree returns GetSharesSharesShare.Free, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetFree() int64 { return v.Free }
+
+// GetUsed returns GetSharesSharesShare.Used, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetUsed() int64 { return v.Used }
+
+// GetSize returns GetSharesSharesShare.Size, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetSize() int64 { return v.Size }
+
+// GetInclude returns GetSharesSharesShare.Include, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetInclude() []string { return v.Include }
+
+// GetExclude returns GetSharesSharesShare.Exclude, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetExclude() []string { return v.Exclude }
+
+// GetCache returns GetSharesSharesShare.Cache, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetCache() bool { return v.Cache }
+
+// GetNameOrig returns GetSharesSharesShare.NameOrig, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetNameOrig() string { return v.NameOrig }
+
+// GetComment returns GetSharesSharesShare.Comment, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetComment() string { return v.Comment }
+
+// GetAllocator returns GetSharesSharesShare.Allocator, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetAllocator() string { return v.Allocator }
+
+// GetSplitLevel returns GetSharesSharesShare.SplitLevel, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetSplitLevel() string { return v.SplitLevel }
+
+// GetFloor returns GetSharesSharesShare.Floor, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetFloor() string { return v.Floor }
+
+// GetCow returns GetSharesSharesShare.Cow, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetCow() string { return v.Cow }
+
+// GetColor returns GetSharesSharesShare.Color, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetColor() string { return v.Color }
+
+// GetLuksStatus returns GetSharesSharesShare.LuksStatus, and is useful for accessing the field via an interface.
+func (v *GetSharesSharesShare) GetLuksStatus() string { return v.LuksStatus }
+
 // GetVersionInfo includes the requested fields of the GraphQL type Info.
 type GetVersionInfo struct {
 	// Software versions
@@ -52,6 +139,50 @@ type GetVersionResponse struct {
 
 // GetInfo returns GetVersionResponse.Info, and is useful for accessing the field via an interface.
 func (v *GetVersionResponse) GetInfo() GetVersionInfo { return v.Info }
+
+// The query executed by GetShares.
+const GetShares_Operation = `
+query GetShares {
+	shares {
+		name
+		free
+		used
+		size
+		include
+		exclude
+		cache
+		nameOrig
+		comment
+		allocator
+		splitLevel
+		floor
+		cow
+		color
+		luksStatus
+	}
+}
+`
+
+func GetShares(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *GetSharesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetShares",
+		Query:  GetShares_Operation,
+	}
+
+	data_ = &GetSharesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
 
 // The query executed by GetVersion.
 const GetVersion_Operation = `
